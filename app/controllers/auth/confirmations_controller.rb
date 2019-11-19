@@ -5,7 +5,7 @@ module DeviseTokenAuth
             if @resources.errors.empty?
                 redirect_to(ENV['CONFIRM_URL'])
             else
-                railse ActionController::RoutingError, 'Not Found'
+                raise ActionController::RoutingError, 'Not Found'
             end
         end
     end

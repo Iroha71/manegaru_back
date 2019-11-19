@@ -6,5 +6,9 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :confirmable, :validatable
   include DeviseTokenAuth::Concerns::User
-  belongs_to :girl
+  belongs_to :girl, optional: true
+
+  def token_validation_response
+    UserSerializer.new(self)
+  end
 end
