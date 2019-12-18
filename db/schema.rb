@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 2019_11_23_233646) do
     t.string "nickname"
     t.string "image"
     t.string "email"
+    t.integer "gold", default: 0
     t.string "personal_pronoun"
     t.string "personality"
     t.bigint "girl_id"
