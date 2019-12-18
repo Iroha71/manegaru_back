@@ -8,7 +8,7 @@ class Girl < ApplicationRecord
                 is_lock = false
             end
         end
-        girl = { name: self.name, code: self.code, detail: self.detail, is_lock: is_lock }
+        girl = { id: self.id, name: self.name, code: self.code, detail: self.detail, is_lock: is_lock }
         return girl
     end
 end
