@@ -11,4 +11,13 @@ class User < ActiveRecord::Base
   def token_validation_response
     UserSerializer.new(self)
   end
+
+  def success_paid_gold?(cost)
+    if cost <= self.gold
+      self.gold -= cost
+      return true
+    else
+      return false
+    end
+  end
 end
