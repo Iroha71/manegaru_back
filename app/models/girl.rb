@@ -4,7 +4,7 @@ class Girl < ApplicationRecord
     def get_with_lockinfo(current_user_id)
         is_lock = true
         self.user_girls.each do |user_girl|
-            if user_girl.id == current_user_id
+            if user_girl.user_id == current_user_id
                 is_lock = false
             end
         end
