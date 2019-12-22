@@ -14,4 +14,9 @@ class GirlController < ApplicationController
             render status: 200, json: result
         end
     end
+
+    def show
+        @girl = Girl.find(params[:id])
+        render status: 200, json: @girl
+    end
 end
