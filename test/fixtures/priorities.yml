@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  point: 1
+  like_rate: 1
+
+two:
+  name: MyString
+  point: 1
+  like_rate: 1

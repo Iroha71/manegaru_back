@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  limit_date: 2019-12-23
+  prioriry: one
+  project: one
+  user: one
+
+two:
+  title: MyString
+  limit_date: 2019-12-23
+  prioriry: two
+  project: two
+  user: two
