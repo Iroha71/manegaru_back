@@ -1,5 +1,5 @@
 class Task < ApplicationRecord
-  belongs_to :prioriry
+  belongs_to :priority
   belongs_to :project
   belongs_to :user
 end

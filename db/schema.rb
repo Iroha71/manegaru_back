@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_23_233646) do
+ActiveRecord::Schema.define(version: 2019_12_22_155126) do
 
   create_table "girls", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
@@ -20,6 +20,37 @@ ActiveRecord::Schema.define(version: 2019_11_23_233646) do
     t.string "detail"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "priorities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.integer "point"
+    t.integer "like_rate"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", limit: 30, null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_projects_on_user_id"
+  end
+
+  create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "title", limit: 50, null: false
+    t.string "detail", limit: 150
+    t.date "limit_date"
+    t.bigint "priority_id", null: false
+    t.bigint "project_id", null: false
+    t.bigint "user_id", null: false
+    t.string "status", default: "未着手"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["priority_id"], name: "index_tasks_on_priority_id"
+    t.index ["project_id"], name: "index_tasks_on_project_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "user_girls", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -62,6 +93,10 @@ ActiveRecord::Schema.define(version: 2019_11_23_233646) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "projects", "users"
+  add_foreign_key "tasks", "priorities"
+  add_foreign_key "tasks", "projects"
+  add_foreign_key "tasks", "users"
   add_foreign_key "user_girls", "girls"
   add_foreign_key "user_girls", "users"
 end

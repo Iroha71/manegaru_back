@@ -4,4 +4,6 @@ Rails.application.routes.draw do
   resources :girl
   resources :user
   resources :user_girl
+  resources :project
+  resources :task
 end
