@@ -1,5 +1,5 @@
 class TaskController < ApplicationController
-    before_action :authenticate_user!
+    before_action :authenticate_user!, only: [:create, :index, :show]
 
     def index
         if params[:group_id].present?
@@ -23,6 +23,16 @@ class TaskController < ApplicationController
         @task = Task.new(get_task_params)
         if @task.save!
             render status: 200, json: @task
+        else
+            render_faild_save_message()
+        end
+    end
+
+    def update_status
+        @task = Task.find(params[:id])
+        @task.update(status: params[:status])
+        if @task.save!
+            render status: 200, json: @task.status
         else
             render_faild_save_message()
         end
