@@ -24,12 +24,16 @@ class TaskController < ApplicationController
         if @task.save!
             render status: 200, json: @task
         else
-            render status: 422, json: { 'error': '登録に失敗しました' }
+            render_faild_save_message()
         end
     end
 
     private
     def get_task_params
         params.permit(:title, :detail, :limit_date, :status, :priority_id, :project_id).merge(user_id: @current_user.id)
+    end
+
+    def render_faild_save_message
+        render status: 422, json: { 'error': '登録に失敗しました' }
     end
 end
