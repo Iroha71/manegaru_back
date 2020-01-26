@@ -5,5 +5,9 @@ Rails.application.routes.draw do
   resources :user
   resources :user_girl
   resources :project
-  resources :task
+  resources :task do
+    member do
+      put :update_status
+    end
+  end
 end
