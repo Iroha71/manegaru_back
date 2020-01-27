@@ -1,5 +1,5 @@
 class TaskSerializer < ActiveModel::Serializer
-  attributes :id, :title, :limit_date, :detail, :status, :created_at, :updated_at, :is_updateded
+  attributes :id, :title, :limit_date, :detail, :status, :created_at, :updated_at, :is_updated
   belongs_to :priority
   belongs_to :project
 
@@ -27,7 +27,7 @@ class TaskSerializer < ActiveModel::Serializer
     object.updated_at.strftime("%Y年%m月%d日")
   end
 
-  def is_updateded
+  def is_updated
     if object.created_at != object.updated_at
       true
     else

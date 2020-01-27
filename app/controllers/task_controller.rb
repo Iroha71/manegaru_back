@@ -28,6 +28,15 @@ class TaskController < ApplicationController
         end
     end
 
+    def update
+        @task = Task.find(params[:id])
+        if @task.update(get_task_params)
+            render json: @task
+        else
+            render_faild_save_message()
+        end
+    end
+
     def update_status
         @task = Task.find(params[:id])
         @task.update(status: params[:status])
