@@ -1,5 +1,6 @@
 class TaskController < ApplicationController
-    before_action :authenticate_user!, only: [:create, :index, :show]
+    before_action :authenticate_user!
+    before_action :set_task, only: [:show, :update, :update_status]
 
     def index
         if params[:group_id].present?
@@ -11,12 +12,7 @@ class TaskController < ApplicationController
     end
 
     def show
-        @task = Task.includes(:priority).includes(:project).find_by(user_id: @current_user.id, id: params[:id])
-        if @task
-            render status: 200, json: @task
-        else
-            render status: 404, json: { error: 'このタスクは存在しません' }
-        end
+        render status: :ok, json: @task
     end
     
     def create
@@ -29,22 +25,13 @@ class TaskController < ApplicationController
     end
 
     def update
-        @task = Task.find(params[:id])
-        if @task.update(get_task_params)
-            render json: @task
-        else
-            render_faild_save_message()
-        end
+        @task.update(get_task_params)
+        render json: @task
     end
 
     def update_status
-        @task = Task.find(params[:id])
         @task.update(status: params[:status])
-        if @task.save!
-            render status: 200, json: @task.status
-        else
-            render_faild_save_message()
-        end
+        render status: :ok, json: @task.status
     end
 
     private
@@ -54,5 +41,10 @@ class TaskController < ApplicationController
 
     def render_faild_save_message
         render status: 422, json: { 'error': '登録に失敗しました' }
+    end
+
+    def set_task
+        @task = Task.find(params[:id])
+        authorize @task
     end
 end

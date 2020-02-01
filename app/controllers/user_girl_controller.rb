@@ -2,13 +2,21 @@ class UserGirlController < ApplicationController
     before_action :authenticate_user!
 
     def create
-        if @current_user.success_paid_gold?(100)
-            @user_girl = UserGirl.new(get_user_girl_params)
-            @user_girl.save!
-            @current_user.save!
+        is_success_paid = false
+        ActiveRecord::Base.transaction do
+            require_pay = 100
+            if @current_user.success_paid_gold?(require_pay)
+                @user_girl = UserGirl.new(get_user_girl_params)
+                @user_girl.save!
+                @current_user.save!
+                is_success_paid = true
+            end
+        end
+
+        if is_success_paid
             redirect_to girl_index_path
         else
-            render status: 200, json: { error: '資金が足りません' }
+            render status: :ok, json: { error: '資金が足りません' }
         end
     end
 
