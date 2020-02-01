@@ -9,5 +9,8 @@ Rails.application.routes.draw do
     member do
       put :update_status
     end
+    collection do
+      get :count_not_finish_tasks
+    end
   end
 end
