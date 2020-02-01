@@ -11,6 +11,12 @@ class TaskController < ApplicationController
         render status: 200, json: @task
     end
 
+    def count_not_finish_tasks
+        yet_tasks = Task.where(user_id: @current_user.id, status: '未着手').length
+        working_tasks = Task.where(user_id: @current_user.id, status: '作業中').length
+        render status: :ok, json: { 'yet': yet_tasks, 'working': working_tasks  }
+    end
+
     def show
         render status: :ok, json: @task
     end
