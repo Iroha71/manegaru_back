@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     end
     collection do
       get :count_not_finish_tasks
+      get :filtered_index
+      get :ordered_index
     end
   end
 end

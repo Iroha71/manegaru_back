@@ -11,6 +11,20 @@ class TaskController < ApplicationController
         render status: 200, json: @task
     end
 
+    def filtered_index
+        filter_query = set_base_query(params)
+        filter_query = filter_query + " and #{params[:filter_column]} #{params[:filter_sign]} #{params[:filter_value]}"
+        @task = Task.includes(:priority).includes(:project).where(filter_query)
+        render status: :ok, json: @task
+    end
+
+    def ordered_index
+        filter_query = set_base_query(params)
+        order_query = "#{params[:order_column]} #{params[:order_sign]}"
+        @task = Task.includes(:priority).includes(:project).where(filter_query).order(order_query)
+        render status: :ok, json: @task
+    end
+
     def count_not_finish_tasks
         yet_tasks = Task.where(user_id: @current_user.id, status: '未着手').length
         working_tasks = Task.where(user_id: @current_user.id, status: '作業中').length
@@ -52,5 +66,13 @@ class TaskController < ApplicationController
     def set_task
         @task = Task.find(params[:id])
         authorize @task
+    end
+
+    def set_base_query(params)
+        base_query = "user_id = #{@current_user.id}"
+        if params[:group_id].present?
+            base_query += " and project_id = #{params[:group_id]}"
+        end
+        return base_query
     end
 end
