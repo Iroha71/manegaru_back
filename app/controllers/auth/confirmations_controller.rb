@@ -3,9 +3,9 @@ module DeviseTokenAuth
         def show
             @resources = resource_class.confirm_by_token(params[:confirmation_token])
             if @resources.errors.empty?
-                redirect_to(ENV['CONFIRM_URL'])
+                redirect_to(ENV['CONFIRM_URL'] + "?confirmedEmail=#{@resources.email}")
             else
-                raise ActionController::RoutingError, 'Not Found'
+                redirect_to(ENV['CONFIRM_URL'] + "?error=500")
             end
         end
     end
