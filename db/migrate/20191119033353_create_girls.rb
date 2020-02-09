@@ -5,6 +5,8 @@ class CreateGirls < ActiveRecord::Migration[6.0]
       t.string :code, null: false
       t.date :birthday
       t.string :favorite
+      t.string :color
+      t.string :color2
       t.string :detail
 
       t.timestamps

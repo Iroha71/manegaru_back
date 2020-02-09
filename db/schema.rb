@@ -17,6 +17,8 @@ ActiveRecord::Schema.define(version: 2019_12_22_155126) do
     t.string "code", null: false
     t.date "birthday"
     t.string "favorite"
+    t.string "color"
+    t.string "color2"
     t.string "detail"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
