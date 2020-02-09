@@ -1,3 +1,3 @@
 class PrioritySerializer < ActiveModel::Serializer
-  attributes :id, :name, :point, :like_rate
+  attributes :id, :name, :level, :point, :like_rate
 end

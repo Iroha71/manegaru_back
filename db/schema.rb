@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 2019_12_22_155126) do
   create_table "priorities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.integer "point"
+    t.integer "level"
     t.integer "like_rate"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
