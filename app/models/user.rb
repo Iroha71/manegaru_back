@@ -8,6 +8,10 @@ class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
   belongs_to :girl, optional: true
 
+  validates :name, presence: true, length: { maximum: 20 }
+  validates :nickname, presence: true, length: { maximum: 10 }
+  validates :personal_pronoun, presence: true
+
   def token_validation_response
     UserSerializer.new(self)
   end
