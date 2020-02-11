@@ -46,6 +46,7 @@ Rails.application.configure do
     :tls => true
   }
 
+  config.hosts << ENV['NGROK_URL']
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
