@@ -15,4 +15,5 @@ Rails.application.routes.draw do
       get :ordered_index
     end
   end
+  post '/callback' => 'linebot#callback'
 end
