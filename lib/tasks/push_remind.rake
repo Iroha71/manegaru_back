@@ -12,12 +12,13 @@ namespace :push_remind do
         @target_users.each do |user|
             task_list = ""
             user.tasks.each do |task|
-                task_list += "\n#{task.title}"
+                task_list += "\n・#{task.title}"
             end
             girl_code = user.girl.code
             message = Girl.get_remind_message(girl_code, user.nickname, task_list)
             line_message = { type: 'text', text: message }
-            response = client.push_message(user.line_id, line_message)
+            url ={ type: 'text', text: ENV['CLIENT_URL'] + '/task?openExternalBrowser=1' } 
+            response = client.push_message(user.line_id, [line_message, url])
         end
     end
 end
