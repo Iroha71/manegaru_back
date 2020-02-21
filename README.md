@@ -1,24 +1,20 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## ngrokを使うときに変更する場所
 
-Things you may want to cover:
+### front
+* `.env`
+    - `BASE_URL` = バックngrokのurl
+        - ajaxのベースurlで使用
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+### back
+* `.env`
+    - `CLIENT_URL` = フロントのurl
+        - メール認証後のリダイレクト先・LINE送信するurl
+    - `NGROK_URL` = バックのurl
+        - ngrokのforbidden対策
+### LINE DEV
+* `LIFF`
+    - エンドポイントurl
+* `BOT`
+    - コールバックurl
