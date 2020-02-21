@@ -1,5 +1,6 @@
 class LinebotController < ApplicationController
     require 'line/bot'
+    require 'rake'
     
     def client
         @client ||= Line::Bot::Client.new { |config|
@@ -37,5 +38,12 @@ class LinebotController < ApplicationController
             type: 'text',
             text: 'テストです'
         }
+    end
+
+    def push_message
+        Rails.application.load_tasks
+        Rake::Task['push_remind:line'].execute
+        Rake::Task['push_remind:line'].clear
+        render json: { 'message': 'LINE message pushed.' }
     end
 end
