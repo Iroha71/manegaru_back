@@ -33,6 +33,7 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[6.0]
       t.string :nickname
       t.string :image
       t.string :email
+      t.string :line_id
       t.integer :gold, default: 100
       t.string :personal_pronoun
       t.string :personality
