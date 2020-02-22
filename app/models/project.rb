@@ -12,4 +12,9 @@ class Project < ApplicationRecord
       return same_project.length.to_s
     end
   end
+
+  def self.create_default_project(user_id)
+    @project = self.new(name: 'やること', user_id: user_id)
+    @project.save! ? 'success' : 'faild'
+  end
 end

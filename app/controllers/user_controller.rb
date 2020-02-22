@@ -8,6 +8,6 @@ class UserController < ApplicationController
 
     private
     def get_user_params
-        params.permit(:id, :girl_id, :line_id)
+        params.permit(:girl_id, :line_id)
     end
 end
