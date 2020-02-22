@@ -15,6 +15,6 @@
         - ngrokのforbidden対策
 ### LINE DEV
 * `LIFF`
-    - エンドポイントurl
+    - エンドポイントurl (フロントのngrok url)
 * `BOT`
-    - コールバックurl
+    - コールバックurl (バックのngrok url)
