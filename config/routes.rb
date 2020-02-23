@@ -10,9 +10,8 @@ Rails.application.routes.draw do
       put :update_status
     end
     collection do
+      get :custom
       get :count_not_finish_tasks
-      get :filtered_index
-      get :ordered_index
     end
   end
   post '/callback' => 'linebot#callback'

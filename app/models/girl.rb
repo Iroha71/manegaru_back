@@ -1,6 +1,8 @@
 class Girl < ApplicationRecord
     has_many :user_girls
 
+    scope :get_all, -> { all.includes(:user_girls).references(:user_girls).order(:id) }
+
     def get_with_lockinfo(current_user_id)
         is_lock = true
         self.user_girls.each do |user_girl|

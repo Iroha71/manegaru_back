@@ -9,6 +9,10 @@ class Task < ApplicationRecord
   validates :project_id, presence: true
   validates :user_id, presence: true
 
+  scope :get_all, -> (user_id) { includes(:priority).includes(:project).where(user_id: user_id) }
+  scope :get_only_project, -> (user_id, project_id) { includes(:priority).includes(:project).where(user_id: user_id, project_id: project_id) }
+  scope :get_filtered, -> (query) { includes(:priority).includes(:project).where(query) }
+  scope :get_ordered, -> (query, column, sign) { includes(:priority).includes(:project).where(query).order("#{column} #{sign}") }
   def self.get_limit_tomorrow
     now = Time.current
     limit_date = now.tomorrow
