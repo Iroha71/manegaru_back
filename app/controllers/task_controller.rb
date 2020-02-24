@@ -12,11 +12,11 @@ class TaskController < ApplicationController
     end
 
     def custom
-        base_query = set_base_query(params, params[:type])
-        if params[:type].eql?('filter')
+        base_query = set_base_query(params)
+        if params[:order_column].present?
+            @task = Task.get_filtered(base_query).order("#{params[:order_column]} #{params[:order_sign]}")
+        else
             @task = Task.get_filtered(base_query)
-        elsif params[:type].eql?('order')
-            @task = Task.get_ordered(base_query, params[:column], params[:sign])
         end
         render status: :ok, json: @task
     end
@@ -64,10 +64,10 @@ class TaskController < ApplicationController
         authorize @task
     end
 
-    def set_base_query(params, filter_type)
+    def set_base_query(params)
         base_query = "user_id = #{@current_user.id}"
         base_query += params[:group_id].present? ? " and project_id = #{params[:group_id]}" : ''
-        base_query += filter_type.eql?('filter') ? " and #{params[:column]} #{params[:sign]} #{params[:value]}" : ''
+        base_query += params[:column].present? ? " and #{params[:column]} #{params[:sign]} #{params[:value]}" : ''
         return base_query
     end
 end
