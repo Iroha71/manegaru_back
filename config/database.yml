@@ -49,6 +49,7 @@ test:
 #
 production:
   <<: *default
-  database: comcon_back_production
+  database: comcon_production
   username: comcon_back
+  encoding: utf8
   password: <%= ENV['COMCON_BACK_DATABASE_PASSWORD'] %>

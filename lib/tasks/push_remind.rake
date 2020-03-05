@@ -17,7 +17,7 @@ namespace :push_remind do
             girl_code = user.girl.code
             message = Girl.get_remind_message(girl_code, user.nickname, task_list)
             line_message = { type: 'text', text: message }
-            url ={ type: 'text', text: ENV['CLIENT_URL'] + 'task?openExternalBrowser=1' } 
+            url ={ type: 'text', text: ENV['CLIENT_URL'] + '/task?openExternalBrowser=1' } 
             response = client.push_message(user.line_id, [line_message, url])
         end
     end
