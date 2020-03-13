@@ -1,5 +1,5 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :email, :name, :nickname, :personal_pronoun, :personality, :gold, :is_cooped_line
+  attributes :id, :email, :name, :nickname, :personal_pronoun, :personality, :gold, :is_cooped_line, :notify_method
   belongs_to :girl
 
   def is_cooped_line
