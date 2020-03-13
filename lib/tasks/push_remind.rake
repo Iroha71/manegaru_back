@@ -7,8 +7,8 @@ namespace :push_remind do
         }
         @target_users = 
             User.includes([:tasks, :girl]).references(:tasks)
-                .where(tasks: { limit_date: Task.get_limit_tomorrow, status: ['未着手', '作業中'] })
                 .where.not(line_id: nil)
+                .where(tasks: { limit_date: Task.get_limit_tomorrow, status: ['未着手', '作業中'] })
         @target_users.each do |user|
             task_list = ""
             user.tasks.each do |task|
