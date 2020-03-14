@@ -7,8 +7,8 @@ namespace :push_remind do
         }
         @target_users = 
             User.includes([:tasks, :girl]).references(:tasks)
-                .where(tasks: { limit_date: Task.get_limit_tomorrow, status: ['未着手', '作業中'] })
                 .where.not(line_id: nil)
+                .where(notify_method: ['line', 'mail'], tasks: { limit_date: Task.get_limit_tomorrow, status: ['未着手', '作業中'] })
         @target_users.each do |user|
             task_list = ""
             user.tasks.each do |task|
@@ -17,8 +17,13 @@ namespace :push_remind do
             girl_code = user.girl.code
             message = Girl.get_remind_message(girl_code, user.nickname, task_list)
             line_message = { type: 'text', text: message }
-            url ={ type: 'text', text: ENV['CLIENT_URL'] + '/task?openExternalBrowser=1' } 
-            response = client.push_message(user.line_id, [line_message, url])
+            url = ENV['CLIENT_URL'] + '/task/?openExternalBrowser=1'
+            url_message ={ type: 'text', text: url }
+            if user.notify_method.eql?('line') && task_list.present? && user.line_id.present?
+                response = client.push_message(user.line_id, [line_message, url_message])
+            elsif user.notify_method.eql?('mail') && task_list.present?
+                RemindMailer.send_remind_mail(user, message, url).deliver
+            end
         end
     end
 end

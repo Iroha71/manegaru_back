@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_22_155126) do
+ActiveRecord::Schema.define(version: 2020_03_13_100125) do
 
   create_table "girls", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
@@ -83,6 +83,7 @@ ActiveRecord::Schema.define(version: 2019_12_22_155126) do
     t.string "image"
     t.string "email"
     t.string "line_id"
+    t.string "notify_method", default: "nothing"
     t.integer "gold", default: 100
     t.string "personal_pronoun"
     t.string "personality"
