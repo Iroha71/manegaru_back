@@ -7,7 +7,6 @@ namespace :push_remind do
         }
         @target_users = 
             User.includes([:tasks, :girl]).references(:tasks)
-                .where.not(line_id: nil)
                 .where(notify_method: ['line', 'mail'], tasks: { limit_date: Task.get_limit_tomorrow, status: ['未着手', '作業中'] })
         @target_users.each do |user|
             task_list = ""
@@ -21,6 +20,7 @@ namespace :push_remind do
             url_message ={ type: 'text', text: url }
             if user.notify_method.eql?('line') && task_list.present? && user.line_id.present?
                 response = client.push_message(user.line_id, [line_message, url_message])
+                puts "LINEの返却値 #{response.inspect}"
             elsif user.notify_method.eql?('mail') && task_list.present?
                 RemindMailer.send_remind_mail(user, message, url).deliver
             end
