@@ -4,6 +4,7 @@ class CreateSerifus < ActiveRecord::Migration[6.0]
       t.references :girl, null: false, foreign_key: true
       t.string :situation, null: false
       t.string :message, null: false
+      t.string :emotion, null: false
       t.string :voice_path
 
       t.timestamps

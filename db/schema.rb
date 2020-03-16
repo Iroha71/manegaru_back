@@ -45,6 +45,7 @@ ActiveRecord::Schema.define(version: 2020_03_14_143857) do
     t.bigint "girl_id", null: false
     t.string "situation", null: false
     t.string "message", null: false
+    t.string "emotion", null: false
     t.string "voice_path"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
