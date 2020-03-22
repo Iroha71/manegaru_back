@@ -3,7 +3,8 @@ class CreateTasks < ActiveRecord::Migration[6.0]
     create_table :tasks do |t|
       t.string :title, null: false, limit: 50
       t.string :detail, limit: 150
-      t.date :limit_date
+      t.date :toast_at
+      t.string :toast_timing
       t.references :priority, null: false, foreign_key: true
       t.references :project, null: false, foreign_key: true
       t.references :user, null: false, foreign_key: true

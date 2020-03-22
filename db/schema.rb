@@ -44,7 +44,8 @@ ActiveRecord::Schema.define(version: 2020_03_13_100125) do
   create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", limit: 50, null: false
     t.string "detail", limit: 150
-    t.date "limit_date"
+    t.date "toast_at"
+    t.string "toast_timing"
     t.bigint "priority_id", null: false
     t.bigint "project_id", null: false
     t.bigint "user_id", null: false
