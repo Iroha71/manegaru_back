@@ -1,5 +1,6 @@
 class Girl < ApplicationRecord
     has_many :user_girls
+    has_many :serifus
 
     scope :get_all, -> { all.includes(:user_girls).references(:user_girls).order(:id) }
 

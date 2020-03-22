@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       get :count_not_finish_tasks
     end
   end
+  resources :serifu
   post '/callback' => 'linebot#callback'
   get '/push_remind' => 'linebot#push_message'
 end
