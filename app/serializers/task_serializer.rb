@@ -1,11 +1,11 @@
 class TaskSerializer < ActiveModel::Serializer
-  attributes :id, :title, :limit_date, :detail, :status, :created_at, :updated_at, :is_updated
+  attributes :id, :title, :toast_at, :detail, :status, :created_at, :updated_at, :is_updated
   belongs_to :priority
   belongs_to :project
 
-  def limit_date
-    if object.limit_date.present?
-      object.limit_date.strftime("%Y年%m月%d日")
+  def toast_at
+    if object.toast_at.present?
+      object.toast_at.strftime("%Y年%m月%d日")
     else
       'なし'
     end

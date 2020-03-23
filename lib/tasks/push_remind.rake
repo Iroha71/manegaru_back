@@ -1,13 +1,11 @@
 namespace :push_remind do
     desc "リマインダーをLINE BOTに送信する"
-    task line: :environment do
+    task :line, ['toast_timing'] => :environment do |task, args|
         client = Line::Bot::Client.new { |config|
             config.channel_secret = ENV['LINE_BOT_SECRET'],
             config.channel_token = ENV['LINE_BOT_TOKEN']
         }
-        @target_users = 
-            User.includes([:tasks, :girl]).references(:tasks)
-                .where(notify_method: ['line', 'mail'], tasks: { limit_date: Task.get_limit_tomorrow, status: ['未着手', '作業中'] })
+        @target_users = User.get_notify_task(args[:toast_timing])
         @target_users.each do |user|
             task_list = ""
             user.tasks.each do |task|

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_13_100125) do
+ActiveRecord::Schema.define(version: 2020_03_14_143857) do
 
   create_table "girls", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
@@ -41,10 +41,22 @@ ActiveRecord::Schema.define(version: 2020_03_13_100125) do
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
+  create_table "serifus", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "girl_id", null: false
+    t.string "situation", null: false
+    t.string "message", null: false
+    t.string "emotion", null: false
+    t.string "voice_path"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["girl_id"], name: "index_serifus_on_girl_id"
+  end
+
   create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", limit: 50, null: false
     t.string "detail", limit: 150
-    t.date "limit_date"
+    t.date "toast_at"
+    t.string "toast_timing"
     t.bigint "priority_id", null: false
     t.bigint "project_id", null: false
     t.bigint "user_id", null: false
@@ -99,6 +111,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_100125) do
   end
 
   add_foreign_key "projects", "users"
+  add_foreign_key "serifus", "girls"
   add_foreign_key "tasks", "priorities"
   add_foreign_key "tasks", "projects"
   add_foreign_key "tasks", "users"
