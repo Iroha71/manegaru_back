@@ -32,7 +32,6 @@ class TaskController < ApplicationController
     end
     
     def create
-        params[:toast_timing] = params[:toast_at].present? && params[:toast_timing].nil? ? 'morning' : params[:toast_timing]
         @task = Task.new(get_task_params)
         if @task.save!
             render status: 200, json: @task
@@ -53,7 +52,18 @@ class TaskController < ApplicationController
 
     private
     def get_task_params
-        params.permit(:title, :detail, :toast_at, :toast_timing, :status, :priority_id, :project_id).merge(user_id: @current_user.id)
+        arrange_toast_timing_param()
+        params.permit(:id, :title, :detail, :toast_at, :toast_timing, :status, :priority_id, :project_id).merge(user_id: @current_user.id)
+    end
+
+    def arrange_toast_timing_param
+        return if params[:toast_timing].nil?
+        params[:toast_timing] = params[:toast_at].present? && params[:toast_timing].nil? ? 'morning' : params[:toast_timing]
+        if params[:toast_timing].length >= 2
+            params[:toast_timing] = 'both'
+        else
+            params[:toast_timing] = params[:toast_timing].first
+        end
     end
 
     def render_faild_save_message
