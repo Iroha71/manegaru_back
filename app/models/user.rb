@@ -29,4 +29,9 @@ class User < ActiveRecord::Base
       return false
     end
   end
+
+  def add_gold(gold)
+    self.gold += gold
+    self.save!
+  end
 end

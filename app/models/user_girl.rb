@@ -13,4 +13,9 @@ class UserGirl < ApplicationRecord
       'faild'
     end
   end
+
+  def add_like_rate(point)
+    self.like_rate += point
+    self.save!
+  end
 end

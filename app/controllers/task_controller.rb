@@ -1,6 +1,6 @@
 class TaskController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_task, only: [:show, :update, :update_status]
+    before_action :set_task, only: [:show, :update, :update_status, :destroy]
 
     def index
         if params[:group_id].present?
@@ -48,6 +48,20 @@ class TaskController < ApplicationController
     def update_status
         @task.update(status: params[:status])
         render status: :ok, json: @task.status
+    end
+
+    def destroy
+        give_user_gold = 0
+        plus_like_rate = 0
+        ActiveRecord::Base.transaction do
+            give_user_gold = @task.priority.point
+            plus_like_rate = @task.priority.like_rate 
+            @current_user.add_gold(give_user_gold)
+            @user_current_girl = UserGirl.find_by(user_id: @current_user.id, girl_id: @current_user.girl_id)
+            @user_current_girl.add_like_rate(plus_like_rate)
+            @task.destroy()
+        end
+        render status: :ok, json: { user: UserSerializer.new(@current_user), gold: give_user_gold, like_rate: plus_like_rate}
     end
 
     private
