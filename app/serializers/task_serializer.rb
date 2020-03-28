@@ -1,5 +1,5 @@
 class TaskSerializer < ActiveModel::Serializer
-  attributes :id, :title, :toast_at, :toast_at_short, :toast_timing, :is_notified, :detail, :status, :updated_at, :is_updated
+  attributes :id, :title, :toast_at, :toast_at_short, :toast_at_en, :toast_timing, :is_notified, :detail, :status, :updated_at, :is_updated
   belongs_to :priority
   belongs_to :project
 
@@ -16,6 +16,14 @@ class TaskSerializer < ActiveModel::Serializer
       object.toast_at.strftime("%m/%d")
     else
       'なし'
+    end
+  end
+
+  def toast_at_en
+    if object.toast_at.present?
+      object.toast_at
+    else
+      nil
     end
   end
 
