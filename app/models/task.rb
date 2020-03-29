@@ -2,6 +2,7 @@ class Task < ApplicationRecord
   belongs_to :priority
   belongs_to :project
   belongs_to :user
+  belongs_to :girl
 
   validates :title, presence: true, length: { maximum: 50 }
   validates :detail, length: { maximum: 150 }
