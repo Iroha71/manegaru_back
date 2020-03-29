@@ -47,27 +47,33 @@ class TaskController < ApplicationController
 
     def update_status
         @task.update(status: params[:status])
-        render status: :ok, json: @task.status
+        if @task.status == '完了'
+            give_user_gold = 0
+            plus_like_rate = 0
+            ActiveRecord::Base.transaction do
+                give_user_gold = @task.priority.point
+                plus_like_rate = @task.priority.like_rate 
+                @current_user.add_gold(give_user_gold)
+                @user_current_girl = UserGirl.find_by(user_id: @current_user.id, girl_id: @current_user.girl_id)
+                @user_current_girl.add_like_rate(plus_like_rate)
+                @task.destroy()
+            end
+            render status: :ok, json: { status: @task.status, user: UserSerializer.new(@current_user), gold: give_user_gold, like_rate: plus_like_rate}
+        else
+            render status: :ok, json: { status: @task.status }
+        end
     end
 
     def destroy
-        give_user_gold = 0
-        plus_like_rate = 0
-        ActiveRecord::Base.transaction do
-            give_user_gold = @task.priority.point
-            plus_like_rate = @task.priority.like_rate 
-            @current_user.add_gold(give_user_gold)
-            @user_current_girl = UserGirl.find_by(user_id: @current_user.id, girl_id: @current_user.girl_id)
-            @user_current_girl.add_like_rate(plus_like_rate)
-            @task.destroy()
-        end
-        render status: :ok, json: { user: UserSerializer.new(@current_user), gold: give_user_gold, like_rate: plus_like_rate}
+        @task.destroy()
+        render status: :ok, json: { result: 'success' }
     end
 
     private
     def get_task_params
         arrange_toast_timing_param()
         params.permit(:id, :title, :detail, :toast_at, :toast_timing, :status, :priority_id, :project_id).merge(user_id: @current_user.id)
+        .merge(girl_id: @current_user.girl_id)
     end
 
     def arrange_toast_timing_param
