@@ -52,22 +52,28 @@ class TaskController < ApplicationController
 
     def destroy
         give_user_gold = 0
-        plus_like_rate = 0
+        message = ''
         ActiveRecord::Base.transaction do
             give_user_gold = @task.priority.point
             plus_like_rate = @task.priority.like_rate 
             @current_user.add_gold(give_user_gold)
-            @user_current_girl = UserGirl.find_by(user_id: @current_user.id, girl_id: @current_user.girl_id)
-            @user_current_girl.add_like_rate(plus_like_rate)
+            @target_girls = UserGirl.where(user_id: @current_user.id, girl_id: [@current_user.girl_id, @task.girl_id])
+            @target_girls.each do |target_girl|
+                is_current_girl = target_girl.girl_id == @current_user.girl_id
+                target_girl.add_like_rate(plus_like_rate, is_current_girl)
+                message += "【#{target_girl.girl.name}】 "
+            end
             @task.destroy()
         end
-        render status: :ok, json: { user: UserSerializer.new(@current_user), gold: give_user_gold, like_rate: plus_like_rate}
+        message += 'の好感度が上がりました!'
+        render status: :ok, json: { user: UserSerializer.new(@current_user), gold: give_user_gold, like_rate: message }
     end
 
     private
     def get_task_params
         arrange_toast_timing_param()
-        params.permit(:id, :title, :detail, :toast_at, :toast_timing, :status, :priority_id, :project_id).merge(user_id: @current_user.id)
+        params.permit(:id, :title, :detail, :toast_at, :toast_timing, :status, :priority_id, :project_id)
+            .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
     end
 
     def arrange_toast_timing_param

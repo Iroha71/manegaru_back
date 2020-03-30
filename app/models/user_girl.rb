@@ -14,8 +14,9 @@ class UserGirl < ApplicationRecord
     end
   end
 
-  def add_like_rate(point)
-    self.like_rate += point
+  def add_like_rate(point, is_current_girl)
+    like_rate = is_current_girl ? point : (point * 0.8).floor
+    self.like_rate += like_rate
     self.save!
   end
 end
