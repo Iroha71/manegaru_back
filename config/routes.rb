@@ -16,6 +16,8 @@ Rails.application.routes.draw do
     collection do
       get :custom
       get :count_not_finish_tasks
+      put :update_status_multi
+      delete :destroy_multi
     end
   end
   resources :serifu
