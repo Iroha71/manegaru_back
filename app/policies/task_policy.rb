@@ -16,8 +16,16 @@ class TaskPolicy < ApplicationPolicy
         record.user_id == user.id
     end
 
+    def update_status_multi?
+        true
+    end
+
     def destroy?
         record.user_id == user.id
+    end
+
+    def destroy_multi?
+        true
     end
 
 end

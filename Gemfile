@@ -53,3 +53,4 @@ gem 'letter_opener_web'
 gem 'line-bot-api'
 
 gem 'pundit'
+gem 'rename'

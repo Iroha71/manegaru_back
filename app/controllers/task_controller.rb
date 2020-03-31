@@ -47,27 +47,78 @@ class TaskController < ApplicationController
 
     def update_status
         @task.update(status: params[:status])
-        render status: :ok, json: @task.status
+        if @task.status == '完了'
+            give_user_gold = 0
+            message = ''
+            ActiveRecord::Base.transaction do
+                give_user_gold = @task.priority.point
+                plus_like_rate = @task.priority.like_rate 
+                @current_user.add_gold(give_user_gold)
+                @target_girls = UserGirl.where(user_id: @current_user.id, girl_id: [@current_user.girl_id, @task.girl_id])
+                @target_girls.each do |target_girl|
+                    is_current_girl = target_girl.girl_id == @current_user.girl_id
+                    target_girl.add_like_rate(plus_like_rate, is_current_girl)
+                    message += "【#{target_girl.girl.name}】 "
+                end
+                @task.destroy()
+            end
+            message += 'の好感度が上がりました!'
+            render status: :ok, json: { user: UserSerializer.new(@current_user), gold: give_user_gold, like_rate: message }
+        else
+            render status: :ok, json: { status: @task.status }
+        end
+    end
+
+    def update_status_multi
+        @tasks = Task.where(id: params[:ids], user_id: @current_user.id)
+        @tasks.update_all(status: params[:status])
+        if params[:status] == '完了'
+            give_user_gold = 0
+            plus_like_rate = 0
+            plus_like_rate_for_manage_girl = 0
+            relation_girl_ids = []
+            message = ''
+            @tasks.each do |task|
+                give_user_gold += task.priority.point
+                plus_like_rate += task.priority.like_rate
+                plus_like_rate_for_manage_girl += (task.priority.like_rate * 0.8).floor
+                if !relation_girl_ids.include?(task.girl_id)
+                    relation_girl_ids.push(task.girl_id)
+                end
+            end
+            ActiveRecord::Base.transaction do
+                @current_user.add_gold(give_user_gold)
+                @target_girls = UserGirl.where(user_id: @current_user.id, girl_id: relation_girl_ids)
+                @target_girls.each do |user_girl|
+                    total_like_rate = user_girl.girl_id == @current_user.girl_id ? plus_like_rate : plus_like_rate_for_manage_girl
+                    user_girl.add_like_rate(total_like_rate, true)
+                    message += "【#{user_girl.girl.name}】 "
+                end
+            end
+            @tasks.delete_all()
+            @leave_tasks = Task.get_all(@current_user.id)
+            message += "の好感度が上昇しました!"
+            render status: :ok, json: { user: UserSerializer.new(@current_user), tasks: @leave_tasks, gold: give_user_gold, like_rate: message }
+        end
     end
 
     def destroy
-        give_user_gold = 0
-        plus_like_rate = 0
-        ActiveRecord::Base.transaction do
-            give_user_gold = @task.priority.point
-            plus_like_rate = @task.priority.like_rate 
-            @current_user.add_gold(give_user_gold)
-            @user_current_girl = UserGirl.find_by(user_id: @current_user.id, girl_id: @current_user.girl_id)
-            @user_current_girl.add_like_rate(plus_like_rate)
-            @task.destroy()
-        end
-        render status: :ok, json: { user: UserSerializer.new(@current_user), gold: give_user_gold, like_rate: plus_like_rate}
+        @task.destroy()
+        render status: :ok, json: { result: 'success' }
+    end
+
+    def destroy_multi
+        @tasks = Task.where(id: params[:ids])
+        @tasks.delete_all()
+        @leave_tasks = Task.get_all(@current_user.id)
+        render status: :ok, json: @leave_tasks
     end
 
     private
     def get_task_params
         arrange_toast_timing_param()
-        params.permit(:id, :title, :detail, :toast_at, :toast_timing, :status, :priority_id, :project_id).merge(user_id: @current_user.id)
+        params.permit(:id, :title, :detail, :toast_at, :toast_timing, :status, :priority_id, :project_id)
+        .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
     end
 
     def arrange_toast_timing_param

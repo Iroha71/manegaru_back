@@ -19,14 +19,14 @@ default: &default
 
 development:
   <<: *default
-  database: comcon
+  database: manegaru
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: comcon_test
+  database: manegaru_test
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -49,7 +49,7 @@ test:
 #
 production:
   <<: *default
-  database: comcon_production
-  username: comcon_back
+  database: manegaru_production
+  username: manegaru_back
   encoding: utf8
-  password: <%= ENV['COMCON_BACK_DATABASE_PASSWORD'] %>
+  password: <%= ENV['manegaru_back_DATABASE_PASSWORD'] %>

@@ -61,8 +61,10 @@ ActiveRecord::Schema.define(version: 2020_03_14_143857) do
     t.bigint "project_id", null: false
     t.bigint "user_id", null: false
     t.string "status", default: "未着手"
+    t.bigint "girl_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["girl_id"], name: "index_tasks_on_girl_id"
     t.index ["priority_id"], name: "index_tasks_on_priority_id"
     t.index ["project_id"], name: "index_tasks_on_project_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
@@ -112,6 +114,7 @@ ActiveRecord::Schema.define(version: 2020_03_14_143857) do
 
   add_foreign_key "projects", "users"
   add_foreign_key "serifus", "girls"
+  add_foreign_key "tasks", "girls"
   add_foreign_key "tasks", "priorities"
   add_foreign_key "tasks", "projects"
   add_foreign_key "tasks", "users"

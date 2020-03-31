@@ -12,6 +12,9 @@ class UserController < ApplicationController
 
     private
     def get_user_params
+        if params[:line_id].present?
+            params[:notify_method] = 'line'
+        end
         params.permit(:girl_id, :line_id, :notify_method)
     end
 end
