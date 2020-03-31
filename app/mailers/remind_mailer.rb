@@ -1,5 +1,5 @@
 class RemindMailer < ApplicationMailer
-    default from: "no-reply@comcon.com"
+    default from: "noreply@manegaru.com"
 
     def send_remind_mail(user, message, url_message)
         @user = user
