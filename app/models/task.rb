@@ -15,4 +15,26 @@ class Task < ApplicationRecord
   scope :get_filtered, -> (query) { includes(:priority).includes(:project).where(query) }
   scope :get_ordered, -> (query, column, sign) { includes(:priority).includes(:project).where(query).order("#{column} #{sign}") }
 
+  def create_carousel
+    title = arrange_carousel_title(self.title)
+    has_memo_message = self.detail.present? ? 'メモあり' : 'メモなし'
+    text = { text: has_memo_message }
+    task_url = ENV['CLIENT_URL'] + "/task/#{ self.id }/?openExternalBrowser=1"
+    default_action = { type: 'uri', label: '確認する', uri: task_url }
+    action_show_task = { type: "uri", label: "確認する", uri: task_url }
+    return {
+      title: title,
+      text: has_memo_message,
+      defaultAction: default_action,
+      actions: [ action_show_task ]
+    }
+  end
+
+  private
+  def arrange_carousel_title(title)
+    if title.length > 30
+      title = title.slice(0..30) + '…'
+    end
+    title
+  end
 end
