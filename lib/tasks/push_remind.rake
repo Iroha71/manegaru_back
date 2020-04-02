@@ -1,16 +1,22 @@
 namespace :push_remind do
     desc "リマインダーをLINE BOTに送信する"
-    task :line, ['toast_timing'] => :environment do |task, args|
+    task :line, ['notify_timing'] => :environment do |task, args|
         client = Line::Bot::Client.new { |config|
             config.channel_secret = ENV['LINE_BOT_SECRET'],
             config.channel_token = ENV['LINE_BOT_TOKEN']
         }
-        @target_users = User.get_notify_task(args[:toast_timing])
+        @target_users = User.get_notify_task(args[:notify_timing])
         @target_users.each do |user|
             task_list = ""
+            next_notifies = { day: [], week: [], month: [] }
             user.tasks.each do |task|
                 task_list += "\n・#{task.title}"
+                if task.notify_interval.present?
+                    key = task.notify_interval.to_sym
+                    next_notifies[key].push(task.id)
+                end
             end
+            Task.set_next_notify_at(next_notifies, user.tasks[0].notify_at)
             girl_code = user.girl.code
             message = Girl.get_remind_message(girl_code, user.nickname, task_list)
             line_message = { type: 'text', text: message }

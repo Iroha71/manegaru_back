@@ -15,4 +15,12 @@ class Task < ApplicationRecord
   scope :get_filtered, -> (query) { includes(:priority).includes(:project).where(query) }
   scope :get_ordered, -> (query, column, sign) { includes(:priority).includes(:project).where(query).order("#{column} #{sign}") }
 
+  def self.set_next_notify_at(update_ids, today)
+    tommorow = today + 1
+    next_week = today + 7
+    next_month = today >> 1
+    Task.where(id: update_ids[:day]).update_all(notify_at: tommorow)
+    Task.where(id: update_ids[:week]).update_all(notify_at: next_week)
+    Task.where(id: update_ids[:month]).update_all(notify_at: next_month)
+  end
 end

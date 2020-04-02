@@ -82,18 +82,21 @@ class TaskController < ApplicationController
 
     private
     def get_task_params
-        arrange_toast_timing_param()
-        params.permit(:id, :title, :detail, :toast_at, :toast_timing, :status, :priority_id, :project_id)
-        .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
+        arrange_notify_timing_param()
+        if params[:notify_interval].present?
+            params[:status] = '作業中'
+        end
+        params.permit(:id, :title, :detail, :notify_at, :notify_timing, :notify_interval, :status, :priority_id, :project_id)
+            .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
     end
 
-    def arrange_toast_timing_param
-        return if params[:toast_timing].nil?
-        params[:toast_timing] = params[:toast_at].present? && params[:toast_timing].nil? ? 'morning' : params[:toast_timing]
-        if params[:toast_timing].length >= 2
-            params[:toast_timing] = 'both'
+    def arrange_notify_timing_param
+        return if params[:notify_timing].nil?
+        params[:notify_timing] = params[:notify_at].present? && params[:notify_timing].nil? ? 'morning' : params[:notify_timing]
+        if params[:notify_timing].length >= 2
+            params[:notify_timing] = 'both'
         else
-            params[:toast_timing] = params[:toast_timing].first
+            params[:notify_timing] = params[:notify_timing].first
         end
     end
 

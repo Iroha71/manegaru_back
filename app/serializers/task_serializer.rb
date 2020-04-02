@@ -1,28 +1,39 @@
 class TaskSerializer < ActiveModel::Serializer
-  attributes :id, :title, :toast_at, :toast_at_short, :toast_at_en, :toast_timing, :is_notified, :detail, :status, :updated_at, :is_updated
+  attributes :id, :title, :notify_at, :notify_at_short, :notify_at_en, :notify_timing, :notify_interval, :is_notified, :detail, :status, :updated_at, :is_updated
   belongs_to :priority
   belongs_to :project
   belongs_to :girl
 
-  def toast_at
-    if object.toast_at.present?
-      object.toast_at.strftime("%Y年%m月%d日")
+  def notify_at
+    if object.notify_at.present?
+      object.notify_at.strftime("%Y年%m月%d日")
     else
       'なし'
     end
   end
 
-  def toast_at_short
-    if object.toast_at.present?
-      object.toast_at.strftime("%m/%d")
+  def notify_interval
+    case object.notify_interval
+    when 'day':
+      '毎日'
+    when 'week':
+      '毎週'
+    when 'month':
+      '毎月'
+    end
+  end
+
+  def notify_at_short
+    if object.notify_at.present?
+      object.notify_at.strftime("%m/%d")
     else
       'なし'
     end
   end
 
-  def toast_at_en
-    if object.toast_at.present?
-      object.toast_at
+  def notify_at_en
+    if object.notify_at.present?
+      object.notify_at
     else
       nil
     end
@@ -37,7 +48,7 @@ class TaskSerializer < ActiveModel::Serializer
   end
 
   def is_notified
-    if object.toast_at.present? && object.toast_at < Date.current
+    if object.notify_at.present? && object.notify_at < Date.current
       true
     else
       false
