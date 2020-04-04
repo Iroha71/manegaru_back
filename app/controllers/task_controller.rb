@@ -86,6 +86,9 @@ class TaskController < ApplicationController
         if params[:notify_interval].present?
             params[:status] = '作業中'
         end
+        if params[:notify_at].nil?
+            params[:notify_interval] = nil
+        end
         params.permit(:id, :title, :detail, :notify_at, :notify_timing, :notify_interval, :status, :priority_id, :project_id)
             .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
     end

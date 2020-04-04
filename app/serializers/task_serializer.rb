@@ -14,11 +14,11 @@ class TaskSerializer < ActiveModel::Serializer
 
   def notify_interval
     case object.notify_interval
-    when 'day':
+    when 'day'
       '毎日'
-    when 'week':
+    when 'week'
       '毎週'
-    when 'month':
+    when 'month'
       '毎月'
     end
   end
