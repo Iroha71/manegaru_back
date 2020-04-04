@@ -48,22 +48,11 @@ class TaskController < ApplicationController
     def update_status
         @task.update(status: params[:status])
         if @task.status == '完了'
-            give_user_gold = 0
-            message = ''
-            ActiveRecord::Base.transaction do
-                give_user_gold = @task.priority.point
-                plus_like_rate = @task.priority.like_rate 
-                @current_user.add_gold(give_user_gold)
-                @target_girls = UserGirl.where(user_id: @current_user.id, girl_id: [@current_user.girl_id, @task.girl_id])
-                @target_girls.each do |target_girl|
-                    is_current_girl = target_girl.girl_id == @current_user.girl_id
-                    target_girl.add_like_rate(plus_like_rate, is_current_girl)
-                    message += "【#{target_girl.girl.name}】 "
-                end
-                @task.destroy()
-            end
-            message += 'の好感度が上がりました!'
-            render status: :ok, json: { user: UserSerializer.new(@current_user), gold: give_user_gold, like_rate: message }
+            tasks = [ @task ]
+            completed_info = complete_task(tasks)
+            @task.destroy()
+            puts completed_info.inspect
+            render status: :ok, json: { status: @task.status, user: UserSerializer.new(@current_user), gold: completed_info[:gold], like_rate: completed_info[:message] }
         else
             render status: :ok, json: { status: @task.status }
         end
@@ -73,32 +62,9 @@ class TaskController < ApplicationController
         @tasks = Task.where(id: params[:ids], user_id: @current_user.id)
         @tasks.update_all(status: params[:status])
         if params[:status] == '完了'
-            give_user_gold = 0
-            plus_like_rate = 0
-            plus_like_rate_for_manage_girl = 0
-            relation_girl_ids = []
-            message = ''
-            @tasks.each do |task|
-                give_user_gold += task.priority.point
-                plus_like_rate += task.priority.like_rate
-                plus_like_rate_for_manage_girl += (task.priority.like_rate * 0.8).floor
-                if !relation_girl_ids.include?(task.girl_id)
-                    relation_girl_ids.push(task.girl_id)
-                end
-            end
-            ActiveRecord::Base.transaction do
-                @current_user.add_gold(give_user_gold)
-                @target_girls = UserGirl.where(user_id: @current_user.id, girl_id: relation_girl_ids)
-                @target_girls.each do |user_girl|
-                    total_like_rate = user_girl.girl_id == @current_user.girl_id ? plus_like_rate : plus_like_rate_for_manage_girl
-                    user_girl.add_like_rate(total_like_rate, true)
-                    message += "【#{user_girl.girl.name}】 "
-                end
-            end
+            completed_info = complete_task(@tasks)
             @tasks.delete_all()
-            @leave_tasks = Task.get_all(@current_user.id)
-            message += "の好感度が上昇しました!"
-            render status: :ok, json: { user: UserSerializer.new(@current_user), tasks: @leave_tasks, gold: give_user_gold, like_rate: message }
+            render status: :ok, json: { status: '完了', user: UserSerializer.new(@current_user), tasks: completed_info[:leave_tasks], gold: completed_info[:gold], like_rate: completed_info[:message] }
         end
     end
 
@@ -116,18 +82,24 @@ class TaskController < ApplicationController
 
     private
     def get_task_params
-        arrange_toast_timing_param()
-        params.permit(:id, :title, :detail, :toast_at, :toast_timing, :status, :priority_id, :project_id)
-        .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
+        arrange_notify_timing_param()
+        if params[:notify_interval].present?
+            params[:status] = '作業中'
+        end
+        if params[:notify_at].nil?
+            params[:notify_interval] = nil
+        end
+        params.permit(:id, :title, :detail, :notify_at, :notify_timing, :notify_interval, :status, :priority_id, :project_id)
+            .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
     end
 
-    def arrange_toast_timing_param
-        return if params[:toast_timing].nil?
-        params[:toast_timing] = params[:toast_at].present? && params[:toast_timing].nil? ? 'morning' : params[:toast_timing]
-        if params[:toast_timing].length >= 2
-            params[:toast_timing] = 'both'
+    def arrange_notify_timing_param
+        return if params[:notify_timing].nil?
+        params[:notify_timing] = params[:notify_at].present? && params[:notify_timing].nil? ? 'morning' : params[:notify_timing]
+        if params[:notify_timing].length >= 2
+            params[:notify_timing] = 'both'
         else
-            params[:toast_timing] = params[:toast_timing].first
+            params[:notify_timing] = params[:notify_timing].first
         end
     end
 
@@ -146,4 +118,33 @@ class TaskController < ApplicationController
         base_query += params[:column].present? ? " and #{params[:column]} #{params[:sign]} #{params[:value]}" : ''
         return base_query
     end
+
+    def complete_task(tasks)
+        given_gold = 0
+        plus_like_rate = 0
+        plus_like_rate_for_manage_girl = 0
+        message = ''
+        relation_girl_ids = []
+        tasks.each do |task|
+            given_gold += task.priority.point
+            plus_like_rate += task.priority.like_rate
+            plus_like_rate_for_manage_girl += (task.priority.like_rate * 0.8).floor
+            if !relation_girl_ids.include?(task.girl_id)
+                relation_girl_ids.push(task.girl_id)
+            end
+        end
+        ActiveRecord::Base.transaction do
+            @current_user.add_gold(given_gold)
+            @update_records = UserGirl.where(user_id: @current_user.id, girl_id: relation_girl_ids)
+            @update_records.each do |update_record|
+                is_current_girl = update_record.girl_id == @current_user.girl_id
+                total_like_rate = is_current_girl ? plus_like_rate : plus_like_rate_for_manage_girl
+                update_record.add_like_rate(total_like_rate, is_current_girl)
+                message += "【#{update_record.girl.name}】 "
+            end
+        end
+        @leave_tasks = Task.get_all(@current_user.id)
+        message += "の好感度が上がりました！"
+        return { leave_tasks: @leave_tasks, message: message, gold: given_gold }
+    end 
 end
