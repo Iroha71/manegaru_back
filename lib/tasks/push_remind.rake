@@ -7,18 +7,27 @@ namespace :push_remind do
         }
         @target_users = User.get_notify_task(args[:toast_timing])
         @target_users.each do |user|
-            task_list = ""
-            user.tasks.each do |task|
-                task_list += "\n・#{task.title}"
+            task_list = []
+            user.tasks.each_with_index do |task, carousel_count|
+                if carousel_count < 10
+                    task_list.push(task.create_carousel)
+                end
             end
             girl_code = user.girl.code
-            message = Girl.get_remind_message(girl_code, user.nickname, task_list)
-            line_message = { type: 'text', text: message }
+            message = Girl.get_remind_message(girl_code, user.nickname)
             url = ENV['CLIENT_URL'] + '/task/?openExternalBrowser=1'
-            url_message ={ type: 'text', text: url }
+            girl_message = { type: 'text', text: message + "\n" + url }
+            carousel_message = {
+                type: 'template',
+                altText: 'タスクリスト',
+                template: {
+                    type: 'carousel',
+                    columns: task_list
+                }
+            }
             if user.notify_method.eql?('line') && task_list.present? && user.line_id.present?
-                response = client.push_message(user.line_id, [line_message, url_message])
-                puts "LINEの返却値 #{response.inspect}"
+                response = client.push_message(user.line_id, [girl_message, carousel_message])
+                puts "LINEの返却値 #{response.body.to_yaml}"
             elsif user.notify_method.eql?('mail') && task_list.present?
                 RemindMailer.send_remind_mail(user, message, url).deliver
             end
