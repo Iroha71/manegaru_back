@@ -124,7 +124,7 @@ class TaskController < ApplicationController
         plus_like_rate = 0
         plus_like_rate_for_manage_girl = 0
         message = ''
-        relation_girl_ids = []
+        relation_girl_ids = [@current_user.girl_id]
         tasks.each do |task|
             given_gold += task.priority.point
             plus_like_rate += task.priority.like_rate
