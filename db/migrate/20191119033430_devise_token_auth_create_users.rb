@@ -31,12 +31,11 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[6.0]
       ## User Info
       t.string :name
       t.string :nickname
-      t.string :image
       t.string :email
+      t.string :notify_method, default: 'nothing'
       t.string :line_id
       t.integer :gold, default: 100
       t.string :personal_pronoun
-      t.string :personality
       t.references :girl
 
       ## Tokens
