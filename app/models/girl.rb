@@ -19,13 +19,15 @@ class Girl < ApplicationRecord
         remind_message = ""
         case girl_code
         when 'akane'
-            remind_message = "やっほー、#{user_nickname}！ 茜やで！ これ、今日やらなあかんって言いよらんかったか？"
+            remind_message = "やっほー、#{user_nickname}！ 茜やで！ これ、やらなあかんって言いよらんかったか？"
         when 'aoi'
-            remind_message = "こんにちは、#{user_nickname}さん。葵です。今日すべきことをまとめました。確認してくださいね？"
+            remind_message = "こんにちは、#{user_nickname}さん。葵です。今すべきことをまとめました。確認してくださいね？"
         when 'yukari'
             remind_message = "お疲れ様です、#{user_nickname}さん。ゆかりですよ。期限が近いタスクを見つけました。注意してくださいね！"
         when 'itako'
             remind_message = "#{user_nickname}！ こんこん♪ イタコが用向きをお知らせしますわ。頑張ってくださいませ♪ "
+        when 'hiyori':
+            remind_message = "#{user_nickname}…お疲れ様。あの、これ予定に入ってたよ。もし終わってたら教えてね。"
         else
             remind_message = "リマインドです"
         end
