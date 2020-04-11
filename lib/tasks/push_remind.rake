@@ -5,7 +5,9 @@ namespace :push_remind do
             config.channel_secret = ENV['LINE_BOT_SECRET'],
             config.channel_token = ENV['LINE_BOT_TOKEN']
         }
-        @target_users = User.get_notify_task(args[:notify_timing])
+        current_time = Time.current
+        current_hour = "#{current_time.year}-#{current_time.month}-#{current_time.day} #{current_time.hour}:00"
+        @target_users = User.get_notify_task(current_hour)
         @target_users.each do |user|
             task_list = []
             next_notifies = { day: [], week: [], month: [] }
