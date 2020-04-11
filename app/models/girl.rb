@@ -26,7 +26,7 @@ class Girl < ApplicationRecord
             remind_message = "お疲れ様です、#{user_nickname}さん。ゆかりですよ。期限が近いタスクを見つけました。注意してくださいね！"
         when 'itako'
             remind_message = "#{user_nickname}！ こんこん♪ イタコが用向きをお知らせしますわ。頑張ってくださいませ♪ "
-        when 'hiyori':
+        when 'hiyori'
             remind_message = "#{user_nickname}…お疲れ様。あの、これ予定に入ってたよ。もし終わってたら教えてね。"
         else
             remind_message = "リマインドです"
