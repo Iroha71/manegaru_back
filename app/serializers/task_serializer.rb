@@ -6,7 +6,7 @@ class TaskSerializer < ActiveModel::Serializer
 
   def notify_at
     if object.notify_at.present?
-      object.notify_at.strftime("%Y年%m月%d日")
+      object.notify_at.strftime("%Y年%m月%d日 %H時")
     else
       'なし'
     end
@@ -25,7 +25,7 @@ class TaskSerializer < ActiveModel::Serializer
 
   def notify_at_short
     if object.notify_at.present?
-      object.notify_at.strftime("%m/%d")
+      object.notify_at.strftime("%m/%d %H時")
     else
       'なし'
     end
@@ -48,7 +48,7 @@ class TaskSerializer < ActiveModel::Serializer
   end
 
   def is_notified
-    if object.notify_at.present? && object.notify_at < Date.current
+    if object.notify_at.present? && object.notify_at < Time.current
       true
     else
       false

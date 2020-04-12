@@ -55,8 +55,7 @@ ActiveRecord::Schema.define(version: 2020_03_14_143857) do
   create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", limit: 50, null: false
     t.string "detail", limit: 150
-    t.date "notify_at"
-    t.string "notify_timing"
+    t.datetime "notify_at"
     t.string "notify_interval"
     t.bigint "priority_id", null: false
     t.bigint "project_id", null: false
@@ -97,7 +96,6 @@ ActiveRecord::Schema.define(version: 2020_03_14_143857) do
     t.string "nickname"
     t.string "email"
     t.string "notify_method", default: "nothing"
-    t.string "string", default: "nothing"
     t.string "line_id"
     t.integer "gold", default: 100
     t.string "personal_pronoun"

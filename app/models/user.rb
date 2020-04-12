@@ -14,8 +14,8 @@ class User < ActiveRecord::Base
   validates :nickname, presence: true, length: { maximum: 10 }
   validates :personal_pronoun, presence: true
 
-  scope :get_notify_task, -> (notify_timing) { includes([:tasks, :girl]).references(:tasks)
-        .where(notify_method: ['line', 'mail'], tasks: { notify_at: Time.current, notify_timing: [notify_timing, 'both'], status: ['未着手', '作業中'] }) }
+  scope :get_notify_task, -> (notify_at) { includes([:tasks, :girl]).references(:tasks)
+        .where(notify_method: ['line', 'mail'], tasks: { notify_at: notify_at, status: ['未着手', '作業中'] }) }
 
   def token_validation_response
     UserSerializer.new(self)

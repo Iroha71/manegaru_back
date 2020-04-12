@@ -31,9 +31,9 @@ class Task < ApplicationRecord
   end
   
   def self.set_next_notify_at(update_ids, today)
-    tommorow = today + 1
-    next_week = today + 7
-    next_month = today >> 1
+    tommorow = today + 1.days
+    next_week = today + 7.days
+    next_month = today + 1.months
     Task.where(id: update_ids[:day]).update_all(notify_at: tommorow)
     Task.where(id: update_ids[:week]).update_all(notify_at: next_week)
     Task.where(id: update_ids[:month]).update_all(notify_at: next_month)
