@@ -82,25 +82,14 @@ class TaskController < ApplicationController
 
     private
     def get_task_params
-        arrange_notify_timing_param()
         if params[:notify_interval].present?
             params[:status] = '作業中'
         end
         if params[:notify_at].nil?
             params[:notify_interval] = nil
         end
-        params.permit(:id, :title, :detail, :notify_at, :notify_timing, :notify_interval, :status, :priority_id, :project_id)
+        params.permit(:id, :title, :detail, :notify_at, :notify_interval, :status, :priority_id, :project_id)
             .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
-    end
-
-    def arrange_notify_timing_param
-        return if params[:notify_timing].nil?
-        params[:notify_timing] = params[:notify_at].present? && params[:notify_timing].nil? ? 'morning' : params[:notify_timing]
-        if params[:notify_timing].length >= 2
-            params[:notify_timing] = 'both'
-        else
-            params[:notify_timing] = params[:notify_timing].first
-        end
     end
 
     def render_faild_save_message
