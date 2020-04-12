@@ -1,5 +1,5 @@
 class TaskSerializer < ActiveModel::Serializer
-  attributes :id, :title, :notify_at, :notify_at_short, :notify_at_en, :notify_timing, :notify_interval, :is_notified, :detail, :status, :updated_at, :is_updated
+  attributes :id, :title, :notify_at, :notify_at_short, :notify_at_en, :notify_interval, :is_notified, :detail, :status, :updated_at, :is_updated
   belongs_to :priority
   belongs_to :project
   belongs_to :girl
