@@ -1,6 +1,8 @@
 class TaskController < ApplicationController
     before_action :authenticate_user!
-    before_action :set_task, only: [:show, :update, :update_status, :destroy]
+    before_action :set_task, only: [:show, :update, :destroy]
+
+    STATUS = { YET: '未着手', WORKING: '作業中', FINISHED: '完了' }
 
     def index
         if params[:group_id].present?
@@ -19,12 +21,6 @@ class TaskController < ApplicationController
             @task = Task.get_filtered(base_query)
         end
         render status: :ok, json: @task
-    end
-
-    def count_not_finish_tasks
-        yet_tasks = Task.where(user_id: @current_user.id, status: '未着手').length
-        working_tasks = Task.where(user_id: @current_user.id, status: '作業中').length
-        render status: :ok, json: { 'yet': yet_tasks, 'working': working_tasks  }
     end
 
     def show
@@ -46,25 +42,22 @@ class TaskController < ApplicationController
     end
 
     def update_status
-        @task.update(status: params[:status])
-        if @task.status == '完了'
-            tasks = [ @task ]
-            completed_info = complete_task(tasks)
-            @task.destroy()
-            puts completed_info.inspect
-            render status: :ok, json: { status: @task.status, user: UserSerializer.new(@current_user), gold: completed_info[:gold], like_rate: completed_info[:message] }
+        if params[:status] == STATUS[:FINISHED]
+            ids = [ params[:id] ]
+            completed_info = Task.complete(@current_user, ids)
+            render status: :ok, json: { status: STATUS[:FINISHED], user: UserSerializer.new(@current_user), gold: completed_info[:gold], like_rate: completed_info[:message] }
         else
+            set_task()
+            @task.update(status: params[:status])
             render status: :ok, json: { status: @task.status }
         end
     end
 
     def update_status_multi
-        @tasks = Task.where(id: params[:ids], user_id: @current_user.id)
-        @tasks.update_all(status: params[:status])
-        if params[:status] == '完了'
-            completed_info = complete_task(@tasks)
-            @tasks.delete_all()
-            render status: :ok, json: { status: '完了', user: UserSerializer.new(@current_user), tasks: completed_info[:leave_tasks], gold: completed_info[:gold], like_rate: completed_info[:message] }
+        if params[:status] == STATUS[:FINISHED]
+            completed_info = Task.complete(@current_user, params[:ids])
+            @leave_tasks = Task.get_all(current_user.id)
+            render status: :ok, json: { status: STATUS[:FINISHED], user: UserSerializer.new(@current_user), tasks: @leave_tasks, gold: completed_info[:gold], like_rate: completed_info[:message] }
         end
     end
 
@@ -74,8 +67,7 @@ class TaskController < ApplicationController
     end
 
     def destroy_multi
-        @tasks = Task.where(id: params[:ids])
-        @tasks.delete_all()
+        Task.where(id: params[:ids]).delete_all()
         @leave_tasks = Task.get_all(@current_user.id)
         render status: :ok, json: @leave_tasks
     end
@@ -83,7 +75,7 @@ class TaskController < ApplicationController
     private
     def get_task_params
         if params[:notify_interval].present?
-            params[:status] = '作業中'
+            params[:status] = STATUS[:WORKING]
         end
         if params[:notify_at].nil?
             params[:notify_interval] = nil
@@ -107,33 +99,4 @@ class TaskController < ApplicationController
         base_query += params[:column].present? ? " and #{params[:column]} #{params[:sign]} #{params[:value]}" : ''
         return base_query
     end
-
-    def complete_task(tasks)
-        given_gold = 0
-        plus_like_rate = 0
-        plus_like_rate_for_manage_girl = 0
-        message = ''
-        relation_girl_ids = [@current_user.girl_id]
-        tasks.each do |task|
-            given_gold += task.priority.point
-            plus_like_rate += task.priority.like_rate
-            plus_like_rate_for_manage_girl += (task.priority.like_rate * 0.8).floor
-            if !relation_girl_ids.include?(task.girl_id)
-                relation_girl_ids.push(task.girl_id)
-            end
-        end
-        ActiveRecord::Base.transaction do
-            @current_user.add_gold(given_gold)
-            @update_records = UserGirl.where(user_id: @current_user.id, girl_id: relation_girl_ids)
-            @update_records.each do |update_record|
-                is_current_girl = update_record.girl_id == @current_user.girl_id
-                total_like_rate = is_current_girl ? plus_like_rate : plus_like_rate_for_manage_girl
-                update_record.add_like_rate(total_like_rate, is_current_girl)
-                message += "【#{update_record.girl.name}】 "
-            end
-        end
-        @leave_tasks = Task.get_all(@current_user.id)
-        message += "の好感度が上がりました！"
-        return { leave_tasks: @leave_tasks, message: message, gold: given_gold }
-    end 
 end
