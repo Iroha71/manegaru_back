@@ -14,22 +14,6 @@ class Task < ApplicationRecord
   scope :get_only_project, -> (user_id, project_id) { includes(:priority).where(user_id: user_id, project_id: project_id).order(created_at: :desc) }
   scope :get_filtered, -> (query) { includes([:priority, :girl, :project]).includes(:project).where(query) }
   scope :get_ordered, -> (query, column, sign) { includes(:priority).includes(:project).where(query).order("#{column} #{sign}") }
-  scope :search_by_title, -> (title) { where("title like %#{title}%") }
-
-  def create_carousel
-    title = arrange_carousel_title(self.title)
-    has_memo_message = self.detail.present? ? 'メモあり' : 'メモなし'
-    text = { text: has_memo_message }
-    task_url = ENV['CLIENT_URL'] + "/task/#{ self.id }/?openExternalBrowser=1"
-    default_action = { type: 'uri', label: '確認する', uri: task_url }
-    action_show_task = { type: "uri", label: "確認する", uri: task_url }
-    return {
-      title: title,
-      text: has_memo_message,
-      defaultAction: default_action,
-      actions: [ action_show_task ]
-    }
-  end
   
   def self.set_next_notify_at(update_ids, today)
     tommorow = today + 1.days
@@ -68,22 +52,5 @@ class Task < ApplicationRecord
     end
     message += "の好感度が上がりました！"
     return { message: message, gold: given_gold }
-  end
-
-  def search_ids(title)
-    @tasks = Task.search_by_title(title)
-    ids = []
-    @tasks.each do |task|
-      ids.push(task.id)
-    end
-    return ids
-  end
-
-  private
-  def arrange_carousel_title(title)
-    if title.length > 30
-      title = title.slice(0..30) + '…'
-    end
-    title
   end
 end

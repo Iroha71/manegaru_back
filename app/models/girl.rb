@@ -16,21 +16,28 @@ class Girl < ApplicationRecord
     end
 
     def self.get_remind_message(girl_code, user_nickname)
-        remind_message = ""
-        case girl_code
-        when 'akane'
-            remind_message = "やっほー、#{user_nickname}！ 茜やで！ これ、やらなあかんって言いよらんかったか？"
-        when 'aoi'
-            remind_message = "こんにちは、#{user_nickname}さん。葵です。今すべきことをまとめました。確認してくださいね？"
-        when 'yukari'
-            remind_message = "お疲れ様です、#{user_nickname}さん。ゆかりですよ。期限が近いタスクを見つけました。注意してくださいね！"
-        when 'itako'
-            remind_message = "#{user_nickname}！ こんこん♪ イタコが用向きをお知らせしますわ。頑張ってくださいませ♪ "
-        when 'hiyori'
-            remind_message = "#{user_nickname}…お疲れ様。あの、これ予定に入ってたよ。もし終わってたら教えてね。"
-        else
-            remind_message = "リマインドです"
+        serifu = {
+            'akane' => {
+                'remind' => "やっほー、#{user_nickname}！ 茜やで！ これ、やらなあかんって言いよらんかったか？"
+            },
+            'aoi' => {
+                'remind' => "こんにちは、#{user_nickname}さん。葵です。今すべきことをまとめました。確認してくださいね？"
+            },
+            'yukari' => {
+                'remind' => "お疲れ様です、#{user_nickname}さん。ゆかりですよ。期限が近いタスクを見つけました。注意してくださいね！"
+            },
+            'itako' => {
+                'remind' => "#{user_nickname}！ こんこん♪ イタコが用向きをお知らせしますわ。頑張ってくださいませ♪ "
+            },
+            'hiyori' => {
+                'remind' => "#{user_nickname}…お疲れ様。あの、これ予定に入ってたよ。もし終わってたら教えてね。"
+            }
+        }
+        begin
+            return serifu[girl_code]['remind']
+        rescue => exception
+            puts exception
+            return 'リマインドです'
         end
-        return remind_message
     end
 end
