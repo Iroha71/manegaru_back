@@ -1,6 +1,14 @@
 class UserController < ApplicationController
     before_action :authenticate_user!
 
+    def show
+        if params[:id].to_i == @current_user.id
+            render status: :ok, json: @current_user
+        else
+            render status: 401, json: { error: 'ユーザ情報が正しくありません' }
+        end
+    end
+
     def get_gold
         render status: :ok, json: @current_user.gold
     end

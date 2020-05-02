@@ -10,7 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_14_143857) do
+ActiveRecord::Schema.define(version: 2020_05_01_150925) do
+
+  create_table "bot_conversations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "line_id", null: false
+    t.string "stage", default: "message_accepting", null: false
+    t.integer "task_confirm_count", default: 0, null: false
+    t.string "last_accepted_word"
+  end
 
   create_table "girls", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
