@@ -17,7 +17,8 @@ namespace :push_remind do
                     next_notifies[key].push(task.id)
                 end
             end
-            message = Girl.get_remind_message(user.girl.code, user.nickname)
+            line_reply_type = 'remind'
+            message = Girl.get_line_reply(user.girl.code, line_reply_type, user.nickname)
             url = ENV['CLIENT_URL'] + '/task/?openExternalBrowser=1'
             girl_message = Linebot.get_text(message + "\n" + url)
             carousel_message = Linebot.get_task_carousel(user.tasks)
