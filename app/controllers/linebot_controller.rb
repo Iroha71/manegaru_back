@@ -18,26 +18,17 @@ class LinebotController < ApplicationController
         events = client.parse_events_from(body)
         events.each { |event|
             user_id = event['source']['userId']
-            puts "ライン#{user_id}"
             case event
             when Line::Bot::Event::Message
                 case event.type
                 when Line::Bot::Event::MessageType::Text
-                    if event.message['text'].eql?('テスト')
-                        client.reply_message(event['replyToken'], template)
-                    end
+                    reply_message = Linebot.get_reply_message(user_id, event.message['text'])
+                    sent_result = client.reply_message(event['replyToken'], reply_message)
                 end
             end
         }
 
         head :ok
-    end
-
-    def template
-        message = {
-            type: 'text',
-            text: 'テストです'
-        }
     end
 
     def push_message

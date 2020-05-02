@@ -16,6 +16,7 @@ class User < ActiveRecord::Base
 
   scope :get_notify_task, -> (notify_at) { includes([:tasks, :girl]).references(:tasks)
         .where(notify_method: ['line', 'mail'], tasks: { notify_at: notify_at, status: ['未着手', '作業中'] }) }
+  scope :find_by_line_id, -> (line_id) { includes(:girl).find_by(line_id: line_id) }
 
   def token_validation_response
     UserSerializer.new(self)

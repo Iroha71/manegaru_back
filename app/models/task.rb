@@ -14,6 +14,7 @@ class Task < ApplicationRecord
   scope :get_only_project, -> (user_id, project_id) { includes(:priority).where(user_id: user_id, project_id: project_id).order(created_at: :desc) }
   scope :get_filtered, -> (query) { includes([:priority, :girl, :project]).includes(:project).where(query) }
   scope :get_ordered, -> (query, column, sign) { includes(:priority).includes(:project).where(query).order("#{column} #{sign}") }
+  scope :search_by_title, -> (user_id, title) { where(user_id: user_id).where("title LIKE '%#{title}%'") }
   
   def self.set_next_notify_at(update_ids, today)
     tommorow = today + 1.days
