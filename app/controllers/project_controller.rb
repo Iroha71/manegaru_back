@@ -5,14 +5,29 @@ class ProjectController < ApplicationController
         render status: 200, json: @project
     end
 
+    def show
+        @project = Project.find(params[:id])
+        render status: :ok, json: @project
+    end
+
     def create
-        project_num = Project.count_same_project(@current_user.id, params[:name])
-        @project = Project.new(name: params[:name] + project_num, user_id: @current_user.id)
-        if @project.save!
-            render status: 200, json: @project
-        else
-            render status: 422, json: { error: '登録に失敗しました' }
+        begin
+            if params[:name].nil?
+                raise 'カテゴリ名は必須です'
+            end
+            project_num = Project.count_same_project(@current_user.id, params[:name])
+            @project = Project.new(name: params[:name] + project_num, user_id: @current_user.id)
+            @project.save!
+            render status: :ok, json: @project
+        rescue => exception
+            render status: 422, json: { message: exception }
         end
+    end
+
+    def update
+        @project = Project.where(user_id: @current_user.id, id: params[:id])
+        @project.update(get_project_params)
+        render status: :ok, json: @project
     end
 
     private
