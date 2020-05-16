@@ -1,7 +1,7 @@
 class Project < ApplicationRecord
   belongs_to :user
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 20 }
   validates :user_id, presence: true
 
   def self.count_same_project(user_id, project_name)

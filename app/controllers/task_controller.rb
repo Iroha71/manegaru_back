@@ -28,12 +28,13 @@ class TaskController < ApplicationController
     end
     
     def create
-        @task = Task.new(get_task_params)
-        if @task.save!
-            render status: 200, json: @task
-        else
-            render_faild_save_message()
-        end
+        begin
+            @task = Task.new(get_task_params)
+            @task.save!
+            render status: :ok, json: @task
+        rescue => exception
+            render status: 422, json: { message: exception }
+        end   
     end
 
     def update
@@ -56,7 +57,11 @@ class TaskController < ApplicationController
     def update_status_multi
         if params[:status] == STATUS[:FINISHED]
             completed_info = Task.complete(@current_user, params[:ids])
-            @leave_tasks = Task.get_all(current_user.id)
+            if params[:project_id].present?
+                @leave_tasks = Task.get_only_project(@current_user.id, params[:project_id])
+            else
+                @leave_tasks = Task.get_all(@current_user.id)
+            end
             render status: :ok, json: { status: STATUS[:FINISHED], user: UserSerializer.new(@current_user), tasks: @leave_tasks, gold: completed_info[:gold], like_rate: completed_info[:message] }
         end
     end
@@ -68,7 +73,11 @@ class TaskController < ApplicationController
 
     def destroy_multi
         Task.where(id: params[:ids]).delete_all()
-        @leave_tasks = Task.get_all(@current_user.id)
+        if params[:project_id].present?
+            @leave_tasks = Task.get_only_project(@current_user.id, params[:project_id])
+        else
+            @leave_tasks = Task.get_all(@current_user.id)
+        end
         render status: :ok, json: @leave_tasks
     end
 
@@ -82,10 +91,6 @@ class TaskController < ApplicationController
         end
         params.permit(:id, :title, :detail, :notify_at, :notify_interval, :status, :priority_id, :project_id)
             .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
-    end
-
-    def render_faild_save_message
-        render status: 422, json: { 'error': '登録に失敗しました' }
     end
 
     def set_task

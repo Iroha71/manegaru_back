@@ -1,5 +1,10 @@
 ja:
   activerecord:
     attributes:
+      user:
+        email: メールアドレス
+        name: 名前
+        nickname: ニックネーム
+        personal_pronoun: 一人称
       project:
         name: カテゴリ名

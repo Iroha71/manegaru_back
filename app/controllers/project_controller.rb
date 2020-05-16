@@ -11,14 +11,14 @@ class ProjectController < ApplicationController
     end
 
     def create
+        project_number = ''
         begin
-            if params[:name].nil?
-                raise 'カテゴリ名は必須です'
+            if params[:name].present?
+                project_number = Project.count_same_project(@current_user.id, params[:name])
             end
-            project_num = Project.count_same_project(@current_user.id, params[:name])
-            @project = Project.new(name: params[:name] + project_num, user_id: @current_user.id)
+            @project = Project.new(name: params[:name] + project_number, user_id: @current_user.id)
             @project.save!
-            render status: :ok, json: @project
+            render json: :ok, json: @project
         rescue => exception
             render status: 422, json: { message: exception }
         end
@@ -32,6 +32,6 @@ class ProjectController < ApplicationController
 
     private
     def get_project_params
-        params.permit(:name).merge(user_id: @current_user.id)
+        params.require(:project).permit(:name).merge(user_id: @current_user.id)
     end
 end

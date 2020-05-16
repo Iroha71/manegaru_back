@@ -5,12 +5,12 @@ class UserGirl < ApplicationRecord
   validates :user_id, presence: true
   validates :girl_id, presence: true
 
-  def self.get_new_girl(params, is_paid)
-    if is_paid  
-      @user_girl = self.new(params)
-      @user_girl.save! ? 'success' : 'faild'
-    else
-      'faild'
+  INSERT_REQUIRE_PAY = 100
+
+  def self.get_new_girl(current_user, girl_id)
+    ActiveRecord::Base.transaction do
+      current_user.pay_gold(INSERT_REQUIRE_PAY)
+      self.create(user_id: current_user.id, girl_id: girl_id).save!
     end
   end
 
