@@ -1,13 +1,17 @@
 class ProjectController < ApplicationController
     before_action :authenticate_user!
+    before_action :authorize_resource, only: [:show, :update, :destroy]
     def index
         @project = Project.where(user_id: @current_user.id)
         render status: 200, json: @project
     end
 
     def show
-        @project = Project.find(params[:id])
-        render status: :ok, json: @project
+        if params[:is_with_tasks].eql?('true')
+            render status: :ok, json: @project, serializer: ProjectTaskSerializer
+        else
+            render status: :ok, json: @project
+        end
     end
 
     def create
@@ -25,13 +29,35 @@ class ProjectController < ApplicationController
     end
 
     def update
-        @project = Project.where(user_id: @current_user.id, id: params[:id])
-        @project.update(get_project_params)
-        render status: :ok, json: @project
+        begin
+            @project.update!(get_project_params)
+            render status: :ok, json: @project
+        rescue => exception
+            render status: 422, json: get_error_array
+        end
+    end
+
+    def destroy
+        begin
+            @project.destroy!()
+            @projects = Project.where(user_id: @current_user)
+            render status: :ok, json: @projects
+        rescue => exception
+            render status: 422, json: get_error_array(exception)
+        end
     end
 
     private
     def get_project_params
         params.require(:project).permit(:name).merge(user_id: @current_user.id)
+    end
+
+    def authorize_resource
+        @project = Project.find(params[:id])
+        authorize @project
+    end
+
+    def get_error_array(exception)
+        { message: exception.to_s.split(',') }
     end
 end
