@@ -34,12 +34,24 @@ class TaskController < ApplicationController
             render status: :ok, json: @task
         rescue => exception
             render status: 422, json: { message: exception }
-        end   
+        end
     end
 
     def update
         @task.update(get_task_params)
         render json: @task
+    end
+
+    def bulk_update
+        @tasks = Task.where(user_id: @current_user, id: params[:ids])
+        begin
+            @tasks.each do |task|
+                task.update!(get_task_params)
+            end
+        rescue => exception
+            puts exception
+            render_error(exception)
+        end
     end
 
     def update_status
@@ -91,6 +103,11 @@ class TaskController < ApplicationController
         end
         params.permit(:id, :title, :detail, :notify_at, :notify_interval, :status, :priority_id, :project_id)
             .merge(user_id: @current_user.id).merge(girl_id: @current_user.girl_id)
+    end
+
+    def render_error(exception)
+        puts exception
+        render status: 422, json: { message: exception.to_s.split(',') }
     end
 
     def set_task

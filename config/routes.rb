@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       delete :destroy_multi
     end
   end
+  put :task, to: 'task#bulk_update'
   resources :serifu
   post '/callback' => 'linebot#callback'
   get '/push_remind' => 'linebot#push_message'

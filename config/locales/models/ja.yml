@@ -1,5 +1,7 @@
 ja:
   activerecord:
+    models:
+      project: カテゴリ
     attributes:
       user:
         email: メールアドレス
@@ -8,3 +10,5 @@ ja:
         personal_pronoun: 一人称
       project:
         name: カテゴリ名
+      task:
+        project: カテゴリ
