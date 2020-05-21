@@ -1,6 +1,16 @@
 class UserGirlController < ApplicationController
     before_action :authenticate_user!
 
+    def index
+        @user_girl = UserGirl.where(user_id: @current_user.id)
+        render status: :ok, json: @user_girl
+    end
+
+    def show
+        @user_girl = UserGirl.find(params[:id])
+        render status: :ok, json: @user_girl
+    end
+
     def create
         begin
             UserGirl.get_new_girl(@current_user, params[:user_girl][:girl_id])
