@@ -14,8 +14,17 @@ class UserController < ApplicationController
     end
 
     def update
-        @current_user.update(get_user_params)
-        render status: 200, json: @current_user
+        if params[:user][:is_first_select].eql?('true')
+            UserGirl.get_new_girl(@current_user, params[:user][:girl_id])
+        end
+
+        begin
+            @current_user.update!(get_user_params)
+            render status: 200, json: @current_user
+        rescue => exception
+            errors = exception.to_s.split(',')
+            render status: 422, json: { message: errors }
+        end
     end
 
     private
@@ -23,6 +32,6 @@ class UserController < ApplicationController
         if params[:line_id].present?
             params[:notify_method] = 'line'
         end
-        params.permit(:girl_id, :line_id, :notify_method)
+        params.require(:user).permit(:email, :name, :nickname, :personal_pronoun, :girl_id, :line_id, :notify_method)
     end
 end

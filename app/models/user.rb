@@ -8,6 +8,7 @@ class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
   belongs_to :girl, optional: true
   has_many :tasks
+  has_many :projects
 
   validates :email, uniqueness: { case_sensitive: true }
   validates :name, presence: true, length: { maximum: 20 }
@@ -22,13 +23,12 @@ class User < ActiveRecord::Base
     UserSerializer.new(self)
   end
 
-  def success_paid_gold?(cost)
-    if cost <= self.gold
-      self.gold -= cost
-      return true
-    else
-      return false
+  def pay_gold(cost)
+    self.gold -= cost
+    if self.gold < 0
+      raise '資金が足りません'
     end
+    self.save!
   end
 
   def add_gold(gold)

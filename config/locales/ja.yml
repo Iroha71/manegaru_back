@@ -3,7 +3,7 @@ ja:
   activerecord:
     errors:
       messages:
-        record_invalid: 'バリデーションに失敗しました: %{errors}'
+        record_invalid: '%{errors}'
         restrict_dependent_destroy:
           has_one: "%{record}が存在しているので削除できません"
           has_many: "%{record}が存在しているので削除できません"

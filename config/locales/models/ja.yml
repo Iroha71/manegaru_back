@@ -1,0 +1,14 @@
+ja:
+  activerecord:
+    models:
+      project: カテゴリ
+    attributes:
+      user:
+        email: メールアドレス
+        name: 名前
+        nickname: ニックネーム
+        personal_pronoun: 一人称
+      project:
+        name: カテゴリ名
+      task:
+        project: カテゴリ

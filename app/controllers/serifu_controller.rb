@@ -3,13 +3,7 @@ class SerifuController < ApplicationController
 
     def index
         situations = split_situation_params()
-        @serifus = Serifu.where(girl_id: params[:girl_id], situation: situations)
-        serifu_set = {}
-        @serifus.each do |serifu|
-            replaced_name_serifu = serifu.replace_user_name(@current_user)
-            sefitu_data = { 'text': replaced_name_serifu.message, 'emotion': serifu.emotion }
-            serifu_set.store(serifu.situation, sefitu_data)
-        end
+        serifu_set = Serifu.get_serifus(@current_user, params[:girl_id], situations)
         render status: :ok, json: serifu_set
     end
 
